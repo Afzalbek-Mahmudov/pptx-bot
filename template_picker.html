@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Dizayn Tanlash</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #0c0c10;
+  --surface: #16161c;
+  --border: rgba(255,255,255,0.08);
+  --txt: #f0f0f5;
+  --muted: rgba(240,240,245,0.4);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.header { padding: 20px 18px 12px; animation: fadeUp 0.35s ease both; }
+.label {
+  font-family:'Syne',sans-serif; font-size:10px; font-weight:600;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin-bottom:5px;
+}
+.header h1 {
+  font-family:'Syne',sans-serif; font-size:24px; font-weight:800; line-height:1.1;
+  background:linear-gradient(130deg,#fff 30%,rgba(255,255,255,.5));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.topic-pill {
+  display:inline-flex; align-items:center; gap:5px; margin-top:8px; padding:4px 11px;
+  background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:100px;
+  font-size:11px; color:var(--muted); max-width:100%; overflow:hidden;
+}
+.topic-pill span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* ── GRID ── */
+.grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; padding:4px 14px 110px;
+  animation: fadeUp .4s ease .1s both;
+}
+
+/* ── CARD ── */
+.card {
+  position:relative; border-radius:16px; overflow:hidden;
+  cursor:pointer; aspect-ratio:3/4.2;
+  border:1.5px solid transparent;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+  user-select:none;
+}
+.card:active { transform:scale(.95); }
+.card.selected {
+  border-color:rgba(255,255,255,.55);
+  box-shadow:0 0 0 3px rgba(255,255,255,.1), 0 16px 50px rgba(0,0,0,.55);
+  transform:translateY(-3px);
+}
+
+.card-bg { position:absolute; inset:0; }
+.accent-line { position:absolute; top:0; left:0; right:0; height:3px; border-radius:3px 3px 0 0; }
+.preview {
+  position:absolute; top:16px; left:12px; right:12px; bottom:58px;
+  border-radius:10px; padding:9px; display:flex; flex-direction:column; gap:4px; overflow:hidden;
+}
+
+/* Bars */
+.b { border-radius:3px; }
+.b-title { height:7px; width:82%; }
+.b-sub { height:4px; width:52%; }
+.b-line { height:3.5px; }
+
+/* Dot list */
+.drow { display:flex; align-items:center; gap:4px; }
+.dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+.dline { height:3.5px; border-radius:3px; flex:1; }
+
+/* Chart mini */
+.chartmini { display:flex; align-items:flex-end; gap:3px; height:26px; margin-top:auto; }
+.chartcol { flex:1; border-radius:3px 3px 0 0; }
+
+/* Tech grid */
+.techgrid { display:grid; grid-template-columns:1fr 1fr; gap:3px; margin-top:auto; }
+.techcell { height:10px; border-radius:3px; }
+
+/* Card info */
+.card-info {
+  position:absolute; bottom:0; left:0; right:0; padding:8px 11px 11px;
+  background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent);
+}
+.card-name { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; color:#fff; line-height:1; }
+.card-sub { font-size:9.5px; color:rgba(255,255,255,.5); margin-top:2px; line-height:1.3; }
+
+/* Check badge */
+.check {
+  position:absolute; top:9px; right:9px; width:22px; height:22px;
+  background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  opacity:0; transform:scale(.4) rotate(-20deg);
+  transition:all .22s cubic-bezier(.34,1.56,.64,1);
+}
+.card.selected .check { opacity:1; transform:scale(1) rotate(0deg); }
+.check svg { width:12px; height:12px; }
+
+/* ════════════════════════════
+   8 DIZAYN
+════════════════════════════ */
+
+/* 1. BIZNES */
+.c-biznes .card-bg { background:linear-gradient(145deg,#0d1b3e,#1a3a6e,#0f2855); }
+.c-biznes .accent-line { background:linear-gradient(90deg,#1e88e5,#42a5f5); }
+.c-biznes .preview { background:rgba(30,136,229,.08); border:1px solid rgba(66,165,245,.2); }
+.c-biznes .b { background:rgba(66,165,245,.35); }
+.c-biznes .b-title { background:rgba(66,165,245,.65); }
+.c-biznes .chartcol { background:linear-gradient(to top,#1e88e5,#42a5f5); }
+
+/* 2. TA'LIM */
+.c-talim .card-bg { background:linear-gradient(145deg,#0a2a1a,#1b4d2e,#0d3320); }
+.c-talim .accent-line { background:linear-gradient(90deg,#43a047,#66bb6a); }
+.c-talim .preview { background:rgba(76,175,80,.07); border:1px solid rgba(102,187,106,.2); }
+.c-talim .b { background:rgba(102,187,106,.3); }
+.c-talim .b-title { background:rgba(102,187,106,.6); }
+.c-talim .dot { background:#66bb6a; }
+.c-talim .dline { background:rgba(102,187,106,.3); }
+
+/* 3. MINIMALIZM */
+.c-minimal .card-bg { background:#f5f5f5; }
+.c-minimal .accent-line { background:#111; }
+.c-minimal .preview { background:transparent; }
+.c-minimal .b { background:rgba(0,0,0,.18); }
+.c-minimal .b-title { background:rgba(0,0,0,.55); height:8px; }
+.c-minimal .divider { height:1px; background:rgba(0,0,0,.1); margin:3px 0; }
+.c-minimal .card-info { background:linear-gradient(to top,rgba(0,0,0,.1),transparent); }
+.c-minimal .card-name { color:#111; }
+.c-minimal .card-sub { color:rgba(0,0,0,.4); }
+.c-minimal .check { background:#111; }
+.c-minimal .check svg { stroke:#fff; }
+
+/* 4. TECH */
+.c-tech .card-bg { background:linear-gradient(145deg,#020b1a,#041424,#071e35); }
+.c-tech .accent-line { background:linear-gradient(90deg,#00bcd4,#26c6da,#00e5ff); }
+.c-tech .preview { background:rgba(0,188,212,.05); border:1px solid rgba(0,188,212,.18); }
+.c-tech .b { background:rgba(0,188,212,.3); }
+.c-tech .b-title { background:rgba(0,188,212,.65); }
+.c-tech .glow { width:5px; height:5px; border-radius:50%; background:#00e5ff; box-shadow:0 0 6px #00e5ff; flex-shrink:0; }
+.c-tech .techcell { background:rgba(0,188,212,.15); border:1px solid rgba(0,188,212,.2); }
+
+/* 5. DARK LUXURY */
+.c-luxury .card-bg { background:linear-gradient(145deg,#0a0800,#1a1500,#120f00); }
+.c-luxury .accent-line { background:linear-gradient(90deg,#b8860b,#ffd700,#b8860b); }
+.c-luxury .preview { background:rgba(255,215,0,.04); border:1px solid rgba(255,215,0,.15); }
+.c-luxury .b { background:rgba(255,215,0,.25); }
+.c-luxury .b-title { background:rgba(255,215,0,.55); }
+.c-luxury .dot { background:#ffd700; box-shadow:0 0 4px rgba(255,215,0,.5); }
+.c-luxury .dline { background:rgba(255,215,0,.2); }
+.c-luxury .chartcol { background:linear-gradient(to top,#b8860b,#ffd700); }
+
+/* 6. GRADIENT */
+.c-gradient .card-bg { background:linear-gradient(135deg,#1a0533,#0d1b4e,#001a3a); }
+.c-gradient .accent-line { background:linear-gradient(90deg,#e040fb,#7c4dff,#40c4ff); }
+.c-gradient .preview { background:rgba(124,77,255,.07); border:1px solid rgba(124,77,255,.2); }
+.c-gradient .b { background:rgba(124,77,255,.35); }
+.c-gradient .b-title { background:linear-gradient(90deg,rgba(224,64,251,.7),rgba(64,196,255,.7)); width:85%; }
+.c-gradient .chartcol:nth-child(1) { background:linear-gradient(to top,#e040fb,#ea80fc); }
+.c-gradient .chartcol:nth-child(2) { background:linear-gradient(to top,#7c4dff,#b388ff); }
+.c-gradient .chartcol:nth-child(3) { background:linear-gradient(to top,#40c4ff,#80d8ff); }
+.c-gradient .chartcol:nth-child(4) { background:linear-gradient(to top,#69f0ae,#b9f6ca); }
+.c-gradient .chartcol:nth-child(5) { background:linear-gradient(to top,#ffd740,#ffe57f); }
+
+/* 7. DAVLAT */
+.c-davlat .card-bg { background:linear-gradient(145deg,#001f3d,#003366,#00264d); }
+.c-davlat .accent-line { background:linear-gradient(90deg,#1a9850,#2ecc71,#1a9850); }
+.c-davlat .preview { background:rgba(26,152,80,.07); border:1px solid rgba(46,204,113,.15); }
+.c-davlat .b { background:rgba(46,204,113,.3); }
+.c-davlat .b-title { background:rgba(255,255,255,.6); }
+.c-davlat .dot { background:#2ecc71; }
+.c-davlat .dline { background:rgba(46,204,113,.25); }
+
+/* 8. PASTEL */
+.c-pastel .card-bg { background:linear-gradient(145deg,#fdf0f8,#f0f4ff,#f0fdf4); }
+.c-pastel .accent-line { background:linear-gradient(90deg,#f48fb1,#ce93d8,#90caf9); }
+.c-pastel .preview { background:transparent; }
+.c-pastel .b { background:rgba(180,130,200,.3); }
+.c-pastel .b-title { background:rgba(180,130,200,.6); height:7px; }
+.c-pastel .dot { background:#ce93d8; }
+.c-pastel .dline { background:rgba(206,147,216,.35); }
+.c-pastel .card-info { background:linear-gradient(to top,rgba(200,150,220,.2),transparent); }
+.c-pastel .card-name { color:#5a3d6e; }
+.c-pastel .card-sub { color:rgba(90,61,110,.5); }
+.c-pastel .check { background:#8e24aa; }
+.c-pastel .check svg { stroke:#fff; }
+
+/* ── BOTTOM ── */
+.bottom {
+  position:fixed; bottom:0; left:0; right:0;
+  padding:12px 14px max(14px, env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--bg) 65%,transparent); z-index:100;
+}
+.cta {
+  width:100%; padding:15px; border:none; border-radius:15px;
+  font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+  cursor:pointer; transition:all .2s ease;
+  background:#fff; color:#0c0c10;
+  opacity:.35; pointer-events:none; letter-spacing:.01em;
+}
+.cta.on { opacity:1; pointer-events:auto; box-shadow:0 8px 30px rgba(255,255,255,.18); }
+.cta.on:active { transform:scale(.98); }
+
+/* Ripple */
+.ripple {
+  position:absolute; border-radius:50%; background:rgba(255,255,255,.12);
+  animation:rpl .45s ease-out forwards; pointer-events:none;
+}
+@keyframes rpl { from{transform:scale(0);opacity:1} to{transform:scale(4);opacity:0} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="label">Taqdimot sozlamalari</div>
+  <h1>Dizayn uslubini<br>tanlang</h1>
+  <div class="topic-pill">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
+    <span id="topicText">Mavzu yuklanmoqda...</span>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- 1. BIZNES -->
+  <div class="card c-biznes" data-key="biznes">
+    <div class="card-bg"></div><div class="accent-line"></div>
+    <div class="preview">
+      <div class="b b-title"></div><div class="b b-sub"></div>
+      <div class="b b-line" style="width:90%"></div>
+      <div class="b b-line" style="width:72%"></div>
+      <div class="b b-line" style="width:84%"></div>
+      <div class="chartmini">
+        <div class="chartcol" style="height:50%"></div>
+        <div class="chartcol" style="height:80%"></div>
+        <div class="chartcol" style="height:62%"></div>
+        <div class="chartcol" style="height:95%"></div>
+        <div class="chartcol" style="height:70%"></div>
+      </div>
+    </div>
+    <div class="card-info"><div class="card-name">💼 Biznes</div><div class="card-sub">Korporativ · Professional</div></div>
+    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#0c0c10" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  </div>
+
+  <!-- 2. TA'LIM -->
+  <div class="card c-talim" data-key="talim">
+    <div class="card-bg"></div><div class="accent-line"></div>
+    <div class="preview">
+      <div class="b b-title"></div><div class="b b-sub"></div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px">
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:75%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:60%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:85%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:50%"></div></div>
+      </div>
+    </div>
+    <div class="card-info"><div class="card-name">📚 Ta'lim</div><div class="card-sub">Akademik · Ilmiy</div></div>
+    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#0c0c10" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  </div>
+
+  <!-- 3. MINIMALIZM -->
+  <div class="card c-minimal" data-key="minimal">
+    <div class="card-bg"></div><div class="accent-line"></div>
+    <div class="preview">
+      <div class="b b-title"></div><div class="divider"></div>
+      <div class="b b-line" style="width:88%"></div>
+      <div class="b b-line" style="width:65%"></div>
+      <div class="b b-line" style="width:78%"></div>
+      <div class="b b-line" style="width:55%"></div>
+      <div class="b b-line" style="width:82%"></div>
+    </div>
+    <div class="card-info"><div class="card-name">⚡ Minimalizm</div><div class="card-sub">Zamonaviy · Sof</div></div>
+    <div class="check" style="background:#111"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  </div>
+
+  <!-- 4. TECH -->
+  <div class="card c-tech" data-key="tech">
+    <div class="card-bg"></div><div class="accent-line"></div>
+    <div class="preview">
+      <div class="b b-title"></div>
+      <div class="drow" style="gap:4px;margin-top:2px"><div class="glow"></div><div class="b b-sub" style="flex:1"></div></div>
+      <div style="display:flex;flex-direction:column;gap:4px;margin-top:3px">
+        <div class="drow"><div class="glow" style="width:4px;height:4px"></div><div class="b b-line" style="width:78%"></div></div>
+        <div class="drow"><div class="glow" style="width:4px;height:4px"></div><div class="b b-line" style="width:62%"></div></div>
+        <div class="drow"><div class="glow" style="width:4px;height:4px"></div><div class="b b-line" style="width:88%"></div></div>
+      </div>
+      <div class="techgrid"><div class="techcell"></div><div class="techcell"></div><div class="techcell"></div><div class="techcell"></div></div>
+    </div>
+    <div class="card-info"><div class="card-name">💻 Tech</div><div class="card-sub">Yuqori texnologiya</div></div>
+    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#0c0c10" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  </div>
+
+  <!-- 5. DARK LUXURY -->
+  <div class="card c-luxury" data-key="luxury">
+    <div class="card-bg"></div><div class="accent-line"></div>
+    <div class="preview">
+      <div class="b b-title"></div><div class="b b-sub"></div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px">
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:80%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:65%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:72%"></div></div>
+      </div>
+      <div class="chartmini">
+        <div class="chartcol" style="height:60%"></div>
+        <div class="chartcol" style="height:85%"></div>
+        <div class="chartcol" style="height:45%"></div>
+        <div class="chartcol" style="height:95%"></div>
+      </div>
+    </div>
+    <div class="card-info"><div class="card-name">👑 Dark Luxury</div><div class="card-sub">Premium · Oltin</div></div>
+    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#0c0c10" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  </div>
+
+  <!-- 6. GRADIENT -->
+  <div class="card c-gradient" data-key="gradient">
+    <div class="card-bg"></div><div class="accent-line"></div>
+    <div class="preview">
+      <div class="b b-title"></div>
+      <div class="b b-sub" style="background:rgba(124,77,255,.3)"></div>
+      <div class="b b-line" style="width:90%;background:rgba(64,196,255,.25)"></div>
+      <div class="b b-line" style="width:70%;background:rgba(224,64,251,.25)"></div>
+      <div class="b b-line" style="width:82%;background:rgba(105,240,174,.25)"></div>
+      <div class="chartmini">
+        <div class="chartcol" style="height:55%"></div>
+        <div class="chartcol" style="height:88%"></div>
+        <div class="chartcol" style="height:66%"></div>
+        <div class="chartcol" style="height:75%"></div>
+        <div class="chartcol" style="height:44%"></div>
+      </div>
+    </div>
+    <div class="card-info"><div class="card-name">🌈 Gradient</div><div class="card-sub">Rang-barang · Ijodiy</div></div>
+    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#0c0c10" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  </div>
+
+  <!-- 7. DAVLAT -->
+  <div class="card c-davlat" data-key="davlat">
+    <div class="card-bg"></div><div class="accent-line"></div>
+    <div class="preview">
+      <div class="b b-title"></div><div class="b b-sub" style="background:rgba(255,255,255,.2)"></div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px">
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:82%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:68%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:75%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:55%"></div></div>
+      </div>
+    </div>
+    <div class="card-info"><div class="card-name">🏛 Davlat</div><div class="card-sub">Rasmiy · Ishonchli</div></div>
+    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#0c0c10" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  </div>
+
+  <!-- 8. PASTEL -->
+  <div class="card c-pastel" data-key="pastel">
+    <div class="card-bg"></div><div class="accent-line"></div>
+    <div class="preview">
+      <div class="b b-title"></div><div class="b b-sub"></div>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:4px">
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:78%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:60%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:88%"></div></div>
+        <div class="drow"><div class="dot"></div><div class="dline" style="width:52%"></div></div>
+      </div>
+    </div>
+    <div class="card-info"><div class="card-name">🌸 Pastel</div><div class="card-sub">Yumshoq · Nafis</div></div>
+    <div class="check" style="background:#8e24aa"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+  </div>
+
+</div>
+
+<div class="bottom">
+  <button class="cta" id="cta">Dizaynni tanlang</button>
+</div>
+
+<script>
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0c0c10'); tg.setBackgroundColor('#0c0c10'); }
+
+  const params = new URLSearchParams(window.location.search);
+  const topic = params.get('topic') || '';
+  const el = document.getElementById('topicText');
+  el.textContent = topic ? (topic.length > 45 ? topic.slice(0,45)+'…' : topic) : 'Taqdimot';
+
+  let selected = null;
+
+  const names = {
+    biznes:"💼 Biznes", talim:"📚 Ta'lim", minimal:"⚡ Minimalizm",
+    tech:"💻 Tech", luxury:"👑 Dark Luxury", gradient:"🌈 Gradient",
+    davlat:"🏛 Davlat", pastel:"🌸 Pastel"
+  };
+
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', function(event) {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+      selected = this.dataset.key;
+
+      const btn = document.getElementById('cta');
+      btn.textContent = `${names[selected]} — Tasdiqlash ✓`;
+      btn.classList.add('on');
+
+      tg?.HapticFeedback?.selectionChanged();
+
+      // Ripple
+      const rect = this.getBoundingClientRect();
+      const rpl = document.createElement('div');
+      rpl.className = 'ripple';
+      const sz = Math.max(rect.width, rect.height);
+      rpl.style.cssText = `width:${sz}px;height:${sz}px;left:${event.clientX-rect.left-sz/2}px;top:${event.clientY-rect.top-sz/2}px`;
+      this.appendChild(rpl);
+      setTimeout(() => rpl.remove(), 450);
+    });
+  });
+
+  document.getElementById('cta').addEventListener('click', () => {
+    if (!selected) return;
+    tg?.HapticFeedback?.impactOccurred('medium');
+    const data = JSON.stringify({ template: selected });
+    if (tg) tg.sendData(data);
+    else alert('Tanlandi: ' + selected);
+  });
+</script>
+</body>
+</html>
