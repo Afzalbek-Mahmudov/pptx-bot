@@ -253,13 +253,17 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
 
 <script>
   const tg = window.Telegram?.WebApp;
-  if (!tg) {
-    document.body.innerHTML = '<div style="padding:40px;text-align:center;color:#fff">⚠️ Iltimos, botdan oching!</div>';
-  } else {
+  
+  // WebApp initialization
+  if (tg) {
     tg.ready();
     tg.expand();
-    try { tg.setHeaderColor('#0c0c10'); } catch(e) {}
-    try { tg.setBackgroundColor('#0c0c10'); } catch(e) {}
+    try { 
+      tg.setHeaderColor('#0c0c10');
+      tg.setBackgroundColor('#0c0c10');
+    } catch(e) {}
+  } else {
+    document.body.innerHTML = '<div style="padding:40px;text-align:center;color:#fff">⚠️ Iltimos, botdan oching!</div>';
   }
 
   const params = new URLSearchParams(window.location.search);
@@ -289,7 +293,7 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
 
       try { tg?.HapticFeedback?.selectionChanged(); } catch(e) {}
 
-      // Ripple
+      // Ripple effect
       const rect = this.getBoundingClientRect();
       const rpl = document.createElement('div');
       rpl.className = 'ripple';
@@ -302,25 +306,25 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
 
   document.getElementById('cta').addEventListener('click', function() {
     if (!selected || isSending || !tg) return;
+    
     isSending = true;
-
     try { tg.HapticFeedback?.impactOccurred('medium'); } catch(e) {}
 
     this.textContent = '⏳ Yuborilmoqda...';
     this.style.opacity = '0.7';
-    this.style.pointerEvents = 'none';
 
     const payload = JSON.stringify({ template: selected });
 
-    // ✅ TO'G'RI USUL — sendData
+    // WebApp'da ma'lumot yuborish
     try {
-      tg.sendData(payload);
-      // sendData ishlaganda Telegram avtomatik yopiladi
+      // Ba'zi qurilmalarda darhol yopilishi uchun biroz kechikish
+      setTimeout(() => {
+        tg.sendData(payload);
+      }, 100);
     } catch(err) {
-      console.error('sendData xato:', err);
-      // Agar xato bo'lsa — alert ko'rsatamiz
-      alert('❌ Ma\'lumot yuborishda xato!\n\nIltimos, botni qayta ishga tushiring.');
-      this.textContent = 'Xato yuz berdi';
+      console.error('sendData error:', err);
+      alert('❌ Xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
+      this.textContent = 'Qayta urinish';
       this.style.opacity = '1';
       isSending = false;
     }
