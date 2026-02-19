@@ -252,9 +252,10 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
 </div>
 
 <script>
-  // ── Telegram Web App ──
   const tg = window.Telegram?.WebApp;
-  if (tg) {
+  if (!tg) {
+    document.body.innerHTML = '<div style="padding:40px;text-align:center;color:#fff">⚠️ Iltimos, botdan oching!</div>';
+  } else {
     tg.ready();
     tg.expand();
     try { tg.setHeaderColor('#0c0c10'); } catch(e) {}
@@ -300,10 +301,10 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
   });
 
   document.getElementById('cta').addEventListener('click', function() {
-    if (!selected || isSending) return;
+    if (!selected || isSending || !tg) return;
     isSending = true;
 
-    try { tg?.HapticFeedback?.impactOccurred('medium'); } catch(e) {}
+    try { tg.HapticFeedback?.impactOccurred('medium'); } catch(e) {}
 
     this.textContent = '⏳ Yuborilmoqda...';
     this.style.opacity = '0.7';
@@ -311,36 +312,17 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
 
     const payload = JSON.stringify({ template: selected });
 
-    // ── ASOSIY MUAMMO YECHIMI ──
-    // sendData faqat initData mavjud bo'lganda ishlaydi
-    // (ya'ni faqat bot orqali ochilganda)
-    if (tg && tg.initData && tg.initData.length > 0) {
-      // To'g'ri Telegram Mini App context — sendData ishlaydi
-      try {
-        tg.sendData(payload);
-      } catch(err) {
-        console.error('sendData failed:', err);
-        // Fallback: close va bot o'zi handle qiladi
-        setTimeout(() => { try { tg.close(); } catch(e) {} }, 500);
-      }
-    } else {
-      // initData yo'q — bot link orqali ochilmagan yoki test rejimi
-      // Bu holda botga inline query yuboramiz
-      console.warn('initData mavjud emas, tg.switchInlineQuery ishlatilmoqda');
-      try {
-        // Bot username ni params dan oling yoki hardcode qiling
-        const botUsername = params.get('bot') || '';
-        if (botUsername) {
-          tg?.switchInlineQuery(payload, ['users']);
-        } else {
-          // Hech narsa bo'lmasa — faqat yopamiz
-          this.textContent = `✅ ${names[selected]} tanlandi!`;
-          this.style.opacity = '1';
-          setTimeout(() => { try { tg?.close(); } catch(e) {} }, 1200);
-        }
-      } catch(e) {
-        console.error(e);
-      }
+    // ✅ TO'G'RI USUL — sendData
+    try {
+      tg.sendData(payload);
+      // sendData ishlaganda Telegram avtomatik yopiladi
+    } catch(err) {
+      console.error('sendData xato:', err);
+      // Agar xato bo'lsa — alert ko'rsatamiz
+      alert('❌ Ma\'lumot yuborishda xato!\n\nIltimos, botni qayta ishga tushiring.');
+      this.textContent = 'Xato yuz berdi';
+      this.style.opacity = '1';
+      isSending = false;
     }
   });
 </script>
