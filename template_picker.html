@@ -52,7 +52,7 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
 .card.selected .check { opacity:1; transform:scale(1) rotate(0deg); }
 .check svg { width:12px; height:12px; }
 
-/* 8 DIZAYN */
+/* Styles for colors */
 .c-biznes .card-bg{background:linear-gradient(145deg,#0d1b3e,#1a3a6e,#0f2855)}
 .c-biznes .accent-line{background:linear-gradient(90deg,#1e88e5,#42a5f5)}
 .c-biznes .preview{background:rgba(30,136,229,.08);border:1px solid rgba(66,165,245,.2)}
@@ -254,13 +254,12 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
 <script>
   const tg = window.Telegram?.WebApp;
   
-  // WebApp initialization
   if (tg) {
     tg.ready();
     tg.expand();
     try { 
-      tg.setHeaderColor('#0c0c10');
-      tg.setBackgroundColor('#0c0c10');
+        tg.setHeaderColor('#0c0c10'); 
+        tg.setBackgroundColor('#0c0c10'); 
     } catch(e) {}
   } else {
     document.body.innerHTML = '<div style="padding:40px;text-align:center;color:#fff">⚠️ Iltimos, botdan oching!</div>';
@@ -308,25 +307,25 @@ html, body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#f0f0
     if (!selected || isSending || !tg) return;
     
     isSending = true;
-    try { tg.HapticFeedback?.impactOccurred('medium'); } catch(e) {}
-
-    this.textContent = '⏳ Yuborilmoqda...';
-    this.style.opacity = '0.7';
+    this.textContent = '✅ Tanlandi...';
+    this.style.opacity = '0.8';
 
     const payload = JSON.stringify({ template: selected });
 
-    // WebApp'da ma'lumot yuborish
     try {
-      // Ba'zi qurilmalarda darhol yopilishi uchun biroz kechikish
+      tg.HapticFeedback?.impactOccurred('medium');
+      
+      // Inline tugmada sendData ishlamasligini bilganimiz uchun:
+      // 1. Ma'lumotni yuborishga harakat qilamiz
+      tg.sendData(payload);
+      
+      // 2. VA DARHOL 200ms ichida oynani yopamiz (Inline bo'lsa ham foydalanuvchi qolib ketmaydi)
       setTimeout(() => {
-        tg.sendData(payload);
-      }, 100);
+        tg.close();
+      }, 200);
+
     } catch(err) {
-      console.error('sendData error:', err);
-      alert('❌ Xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
-      this.textContent = 'Qayta urinish';
-      this.style.opacity = '1';
-      isSending = false;
+      tg.close();
     }
   });
 </script>
